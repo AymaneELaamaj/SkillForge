@@ -1,4 +1,4 @@
-package com.skillforge.identity.User;
+package com.skillforge.identity.entity;
 
 
 import jakarta.persistence.*;

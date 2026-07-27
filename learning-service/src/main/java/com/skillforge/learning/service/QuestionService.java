@@ -17,7 +17,7 @@ public class QuestionService {
         this.skillService = skillService;
     }
 
-    public Question createQuestion(Long skillId, Question question) {
+    public Question addQuestionToSkill(Long skillId, Question question) {
         // On s'assure que la compétence existe avant de lier la question
         Skill skill = skillService.getSkill(skillId);
         question.setSkill(skill);

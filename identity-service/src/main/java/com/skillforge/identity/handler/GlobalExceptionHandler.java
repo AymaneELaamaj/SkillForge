@@ -6,15 +6,45 @@ import com.skillforge.identity.exception.UserNotFoundException;
 import com.skillforge.identity.exception.UsernameAlreadyExistsException;
 
 import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.stream.Collectors;
 
-@RestControllerAdvice
+@RestControllerAdvice   
 public class GlobalExceptionHandler {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+public ResponseEntity<ErrorResponse> handleValidationException(
+        MethodArgumentNotValidException ex,
+        HttpServletRequest request) {
+
+    Map<String, String> errors = ex.getBindingResult()
+            .getFieldErrors()
+            .stream()
+            .collect(Collectors.toMap(
+                    FieldError::getField,
+                    FieldError::getDefaultMessage,
+                    (first, second) -> first
+            ));
+
+    ErrorResponse error = new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.BAD_REQUEST.value(),
+            "VALIDATION_ERROR",
+            "Validation failed",
+            errors,
+            request.getRequestURI()
+    );
+
+    return ResponseEntity.badRequest().body(error);
+}
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUserNotFoundException(
@@ -22,12 +52,13 @@ public class GlobalExceptionHandler {
             HttpServletRequest request) {
             
         ErrorResponse error = new ErrorResponse(
-                LocalDateTime.now(),
-                HttpStatus.NOT_FOUND.value(),
-                "USER_NOT_FOUND",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
+        LocalDateTime.now(),
+        HttpStatus.NOT_FOUND.value(),
+        "USER_NOT_FOUND",
+        ex.getMessage(),
+        null,
+        request.getRequestURI()
+);
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
@@ -41,6 +72,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.CONFLICT.value(),
                 "EMAIL_ALREADY_EXISTS",
                 ex.getMessage(),
+                null,
                 request.getRequestURI()
         );
 
@@ -56,6 +88,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.CONFLICT.value(),
                 "USERNAME_ALREADY_EXISTS",
                 ex.getMessage(),
+                null,
                 request.getRequestURI()
         );
 
@@ -72,6 +105,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST.value(),
                 "BAD_REQUEST",
                 ex.getMessage(),
+                null,
                 request.getRequestURI()
         );
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
@@ -88,6 +122,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "INTERNAL_SERVER_ERROR",
                 "Une erreur inattendue s'est produite.", // On ne renvoie pas ex.getMessage() par sécurité
+                null,
                 request.getRequestURI()
         );
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);

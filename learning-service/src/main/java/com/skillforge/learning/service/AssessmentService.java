@@ -1,9 +1,10 @@
 package com.skillforge.learning.service;
 
 import com.skillforge.learning.client.IdentityServiceClient;
-import com.skillforge.learning.dto.CreateAssessmentRequest;
+import com.skillforge.learning.dto.request.CreateAssessmentRequest;
 import com.skillforge.learning.entity.Assessment;
 import com.skillforge.learning.enums.AssessmentStatus;
+import com.skillforge.learning.exception.AssessmentNotFoundException;
 import com.skillforge.learning.repository.AssessmentRepository;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ public class AssessmentService {
         this.identityServiceClient = identityServiceClient;
         this.assessmentRepository = assessmentRepository;
     }
-
+        
         public Assessment createAssessment(CreateAssessmentRequest request) {
             skillService.getSkill(request.skillId());
 
@@ -41,4 +42,8 @@ public class AssessmentService {
                         return assessmentRepository.save(assessment);
                     });
         }
+        public Assessment getAssessment(Long id) {
+        return assessmentRepository.findById(id)
+                .orElseThrow(() -> new AssessmentNotFoundException("Évaluation introuvable avec l'ID: " + id));
+    }
 }
