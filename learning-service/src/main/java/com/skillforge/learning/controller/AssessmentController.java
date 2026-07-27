@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/learning/assessments")
+@RequestMapping("/api/learning/assessments")
 public class AssessmentController {
 
     private final AssessmentService assessmentService;

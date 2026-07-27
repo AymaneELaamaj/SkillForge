@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/skills/{skillId}/questions") // API RESTful hiérarchique
+@RequestMapping("/api/learning/skills/{skillId}/questions") // API RESTful hiérarchique
 public class QuestionController {
 
     private final QuestionService questionService;
