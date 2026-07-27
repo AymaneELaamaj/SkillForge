@@ -1,6 +1,8 @@
 package com.skillforge.learning.client;
 
 import com.skillforge.learning.dto.UserDto;
+import com.skillforge.learning.exception.IdentityServiceUnavailableException;
+import com.skillforge.learning.exception.UserNotFoundException;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -18,10 +20,24 @@ public class IdentityServiceClient {
         this.restClient = restClient;
     }
 
-    public UserDto getUserById(Long id) {
-        return restClient.get()
-                .uri(identityServiceUrl + "/users/{id}", id)
-                .retrieve()
-                .body(UserDto.class); // Spring désérialise le JSON directement dans ton Record !
-    }
+   public UserDto getUserById(Long id) {
+
+    return restClient.get()
+            .uri(identityServiceUrl + "/{id}", id)
+            .retrieve()
+
+            .onStatus(
+                    status -> status.value() == 404,
+                    (request, response) -> {
+                        throw new UserNotFoundException("User not found with id: " + id);
+                    })
+
+            .onStatus(
+                    status -> status.is5xxServerError(),
+                    (request, response) -> {
+                        throw new IdentityServiceUnavailableException("Identity service is unavailable");
+                    })
+
+            .body(UserDto.class);
+}
 }

@@ -1,6 +1,7 @@
 package com.skillforge.learning.service;
 
 import com.skillforge.learning.entity.Skill;
+import com.skillforge.learning.exception.SkillNotFoundException;
 import com.skillforge.learning.repository.SkillRepository;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -24,6 +25,6 @@ public class SkillService {
     
     public Skill getSkill(Long id) {
         return skillRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Compétence non trouvée"));
+                .orElseThrow(() -> new SkillNotFoundException("Skill not found with id: " + id));
     }
 }
