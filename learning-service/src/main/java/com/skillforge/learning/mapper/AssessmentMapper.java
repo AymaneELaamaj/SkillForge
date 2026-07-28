@@ -11,7 +11,6 @@ import org.mapstruct.Mapping;
 public interface AssessmentMapper {
 
     // On ignore "skill" à la création car on va le chercher via le Service
-    @Mapping(target = "skill", ignore = true) 
     Assessment toEntity(CreateAssessmentRequest request);
 
     AssessmentResponse toResponse(Assessment assessment);

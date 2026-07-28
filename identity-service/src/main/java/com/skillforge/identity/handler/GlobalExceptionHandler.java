@@ -2,6 +2,9 @@ package com.skillforge.identity.handler;
 
 import com.skillforge.identity.dto.ErrorResponse;
 import com.skillforge.identity.exception.EmailAlreadyExistsException;
+import com.skillforge.identity.exception.InvalidCredentialsException;
+import com.skillforge.identity.exception.InvalidTokenException;
+import com.skillforge.identity.exception.TokenExpiredException;
 import com.skillforge.identity.exception.UserNotFoundException;
 import com.skillforge.identity.exception.UsernameAlreadyExistsException;
 
@@ -93,6 +96,42 @@ public ResponseEntity<ErrorResponse> handleValidationException(
         );
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCredentials(
+            InvalidCredentialsException ex,
+            HttpServletRequest request) {
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.UNAUTHORIZED.value(),
+                "INVALID_CREDENTIALS",
+                ex.getMessage(),
+                null,
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
+    }
+
+    @ExceptionHandler({InvalidTokenException.class, TokenExpiredException.class})
+    public ResponseEntity<ErrorResponse> handleJwtExceptions(
+            RuntimeException ex,
+            HttpServletRequest request) {
+
+        String code = ex instanceof TokenExpiredException ? "TOKEN_EXPIRED" : "INVALID_TOKEN";
+
+        ErrorResponse error = new ErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.UNAUTHORIZED.value(),
+                code,
+                ex.getMessage(),
+                null,
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

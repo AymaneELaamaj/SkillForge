@@ -1,7 +1,7 @@
-package com.skillforge.identity.dto;
-
+package com.skillforge.gateway.dto;
 import java.time.LocalDateTime;
 import java.util.Map;
+
 
 public record ErrorResponse(
 
