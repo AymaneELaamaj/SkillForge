@@ -1,8 +1,8 @@
 package com.skillforge.identity.security.handler;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.skillforge.identity.dto.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import tools.jackson.databind.ObjectMapper;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
