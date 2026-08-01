@@ -1,0 +1,26 @@
+{
+  "name": "identity-outbox-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "tasks.max": "1",
+    "database.hostname": "identity-db",
+    "database.port": "5432",
+    "database.user": "postgres",
+    "database.password": "postgres",
+    "database.dbname": "identity_db",
+    "topic.prefix": "identity-service",
+    "plugin.name": "pgoutput",
+    "slot.name": "identity_outbox_slot",
+    "publication.name": "identity_outbox_publication",
+    "publication.autocreate.mode": "filtered",
+    "table.include.list": "public.outbox",
+    "tombstones.on.delete": "false",
+    "key.converter": "org.apache.kafka.connect.storage.StringConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter.schemas.enable": "false",
+    "transforms": "outbox",
+    "transforms.outbox.type": "io.debezium.transforms.outbox.EventRouter",
+    "transforms.outbox.route.topic.replacement": "${routedByValue}",
+    "transforms.outbox.table.field.event.timestamp": "timestamp"
+  }
+}
